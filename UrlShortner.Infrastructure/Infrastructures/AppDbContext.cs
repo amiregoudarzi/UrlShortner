@@ -117,7 +117,8 @@ public class AppDbContext : DbContext
             builder.ToTable("short_urls");
 
             builder.HasKey(model => model.Id);
-
+            builder.HasIndex(x => x.ShortCode).IsUnique();
+            
             builder.Property(model => model.Id)
                 .UsePropertyAccessMode(PropertyAccessMode.Property)
                 .HasColumnName("id");

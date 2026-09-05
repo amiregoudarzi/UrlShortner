@@ -1,0 +1,26 @@
+# .NET
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+
+# Rider
+.idea/
+
+# User-specific files
+*.user
+*.suo
+
+# Rider settings
+*.DotSettings.user
+
+# Test results
+TestResults/
+
+# NuGet
+packages/
+
+# OS
+.DS_Store
+Thumbs.db

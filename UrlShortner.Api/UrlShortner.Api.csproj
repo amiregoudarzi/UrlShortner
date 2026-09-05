@@ -15,12 +15,16 @@
     <PackageReference Include="FastEndpoints" Version="8.3.0" />
     <PackageReference Include="FastEndpoints.Swagger" Version="8.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.30" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Modules\Urls\Create\" />
-    <Folder Include="Modules\Urls\List\" />
   </ItemGroup>
 
 </Project>
