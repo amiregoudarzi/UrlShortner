@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortner.Application.Interfaces;
 using UrlShortner.Infrastructure.Infrastructures;
 
-namespace UrlShortner.Api.Modules.Urls.List;
+namespace UrlShortner.Api.Modules.Urls.Get.List;
 
 public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
 {

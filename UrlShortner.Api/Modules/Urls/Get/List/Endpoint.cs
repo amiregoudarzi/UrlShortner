@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace UrlShortner.Api.Modules.Urls.List;
+namespace UrlShortner.Api.Modules.Urls.Get.List;
 
 public sealed class Endpoint : EndpointWithoutRequest<IReadOnlyList<Query.Response>>
 {
