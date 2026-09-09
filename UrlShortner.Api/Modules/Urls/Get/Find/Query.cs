@@ -115,3 +115,5 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
         }
     }
 }
+
+// todo : if the list of search was null, do not cache the search

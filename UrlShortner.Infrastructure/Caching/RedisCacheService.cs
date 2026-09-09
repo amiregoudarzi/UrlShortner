@@ -33,7 +33,7 @@ public class RedisCacheService(IDistributedCache cache) : IRedisCacheService
                 json,
                 new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
                 },
                 ct);
         }
