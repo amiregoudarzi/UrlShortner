@@ -6,6 +6,7 @@ using UrlShortner.Application.Mapping;
 using UrlShortner.Application.Services.ShortUrl;
 using UrlShortner.Domain.Repositories;
 using UrlShortner.Infrastructure.Caching;
+using UrlShortner.Infrastructure.Database;
 using UrlShortner.Infrastructure.Infrastructures;
 using UrlShortner.Infrastructure.Repositories;
 using UrlShortner.Infrastructure.UnitOfWork;
@@ -48,6 +49,7 @@ builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
 
 var app = builder.Build();
 
