@@ -32,15 +32,13 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
             if (cached is not null) return cached;
             
             await using var connection = await connectionFactory.CreateConnectionAsync(ct);
-
-            await connection.OpenAsync(ct);
-
+            
             const string sql = """
                                SELECT
-                                   Id,
-                                   OriginalUrl AS Url,
-                                   ShortCode AS ShortUrl
-                               FROM ShortUrls
+                                   id AS Id,
+                                   original_url AS Url,
+                                   short_code AS ShortUrl
+                               FROM dbo.short_urls
                                """;
 
             var urls = (await connection.QueryAsync<Response>(sql)).ToList();

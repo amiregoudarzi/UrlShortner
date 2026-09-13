@@ -51,11 +51,11 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
 
                 const string sql = """
                                    SELECT
-                                       Id,
-                                       OriginalUrl AS Url,
-                                       ShortCode AS ShortUrl
-                                   FROM ShortUrls
-                                   ORDER BY CreatedDateUtc DESC
+                                       id AS Id,
+                                       original_url AS Url,
+                                       short_code AS ShortUrl
+                                   FROM dbo.short_urls
+                                   ORDER BY created_date_utc DESC
                                    OFFSET @Offset ROWS
                                    FETCH NEXT @PageSize ROWS ONLY
                                    """;
@@ -104,12 +104,12 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
 
             const string searchSql = """
                                      SELECT
-                                         Id,
-                                         OriginalUrl AS Url,
-                                         ShortCode AS ShortUrl
-                                     FROM ShortUrls
+                                         id AS Id,
+                                         original_url AS Url,
+                                         short_code AS ShortUrl
+                                     FROM dbo.short_urls
                                      WHERE OriginalUrl LIKE @Search
-                                     ORDER BY CreatedDateUtc DESC
+                                     ORDER BY created_date_utc DESC
                                      """;
 
             var searchCommand = new CommandDefinition(
