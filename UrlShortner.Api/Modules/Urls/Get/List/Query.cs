@@ -1,7 +1,7 @@
 using FastEndpoints;
-using Microsoft.EntityFrameworkCore;
+using Dapper;
 using UrlShortner.Application.Interfaces;
-using UrlShortner.Infrastructure.Infrastructures;
+using UrlShortner.Infrastructure.Database;
 
 namespace UrlShortner.Api.Modules.Urls.Get.List;
 
@@ -16,7 +16,9 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
         public string ShortUrl { get; init; } = string.Empty;
     }
 
-    private sealed class Handler(AppDbContext dbContext, IRedisCacheService redis)
+    private sealed class Handler(
+        IRedisCacheService redis,
+        IDbConnectionFactory connectionFactory)
         : ICommandHandler<Query, IReadOnlyList<Response>>
     {
         private const string CacheKey = "short-urls:all";
@@ -27,18 +29,21 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
                 CacheKey,
                 ct);
 
-            if (cached is not null)
-                return cached;
+            if (cached is not null) return cached;
+            
+            await using var connection = await connectionFactory.CreateConnectionAsync(ct);
 
-            var urls = await dbContext.ShortUrls
-                .AsNoTracking()
-                .Select(u => new Response
-                {
-                    Id = u.Id,
-                    Url = u.OriginalUrl,
-                    ShortUrl = u.ShortCode
-                })
-                .ToListAsync(ct);
+            await connection.OpenAsync(ct);
+
+            const string sql = """
+                               SELECT
+                                   Id,
+                                   OriginalUrl AS Url,
+                                   ShortCode AS ShortUrl
+                               FROM ShortUrls
+                               """;
+
+            var urls = (await connection.QueryAsync<Response>(sql)).ToList();
 
             await redis.SetAsync(
                 CacheKey,
