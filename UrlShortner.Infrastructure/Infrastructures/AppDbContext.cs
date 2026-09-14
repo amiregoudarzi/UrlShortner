@@ -23,11 +23,17 @@ public class AppDbContext : DbContext
     
     public DbSet<ShortUrl> ShortUrls { get; set; }
     
+    public DbSet<UrlClick> UrlClicks { get; set; }
+    
+    public DbSet<MessageProcessing> MessageProcessings { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfiguration(new UserEntityTypeConfiguration());
         builder.ApplyConfiguration(new PasswordEntityTypeConfiguration());
         builder.ApplyConfiguration(new ShortUrlEntityTypeConfiguration());
+        builder.ApplyConfiguration(new UrlClickEntityTypeConfiguration());
+        builder.ApplyConfiguration(new MessageProcessingEntityTypeConfiguration());
         base.OnModelCreating(builder);
     }
 
@@ -133,6 +139,81 @@ public class AppDbContext : DbContext
                 
             builder.Property(model => model.CreatedDateUtc)
                 .UsePropertyAccessMode(PropertyAccessMode.Property)
+                .HasColumnName("created_date_utc");
+        }
+    }
+    
+    private class UrlClickEntityTypeConfiguration : IEntityTypeConfiguration<UrlClick>
+    {
+        public void Configure(EntityTypeBuilder<UrlClick> builder)
+        {
+            builder.ToTable("url_clicks");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Id)
+                .HasColumnName("id");
+
+            builder.Property(x => x.ShortUrlId)
+                .HasColumnName("short_url_id")
+                .IsRequired();
+
+            builder.Property(x => x.UserAgent)
+                .HasColumnName("user_agent");
+
+            builder.Property(x => x.Referrer)
+                .HasColumnName("referrer");
+
+            builder.Property(x => x.CreatedDateUtc)
+                .HasColumnName("created_date_utc");
+        }
+    }
+    private class MessageProcessingEntityTypeConfiguration : IEntityTypeConfiguration<MessageProcessing>
+    {
+        public void Configure(EntityTypeBuilder<MessageProcessing> builder)
+        {
+            builder.ToTable("message_processings");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.Id)
+                .HasColumnName("id");
+
+            builder.Property(x => x.MessageId)
+                .HasColumnName("message_id")
+                .IsRequired();
+
+            builder.Property(x => x.MessageType)
+                .HasColumnName("message_type")
+                .IsRequired();
+
+            builder.Property(x => x.QueueName)
+                .HasColumnName("queue_name")
+                .IsRequired();
+
+            builder.Property(x => x.RoutingKey)
+                .HasColumnName("routing_key");
+
+            builder.Property(x => x.Payload)
+                .HasColumnName("payload")
+                .IsRequired();
+
+            builder.Property(x => x.Status)
+                .HasColumnName("status")
+                .HasConversion<string>()
+                .IsRequired();
+
+            builder.Property(x => x.AttemptCount)
+                .HasColumnName("attempt_count")
+                .IsRequired();
+
+            builder.Property(x => x.ErrorMessage)
+                .HasColumnName("error_message");
+
+            builder.Property(x => x.ProcessedAtUtc)
+                .HasColumnName("processed_at_utc");
+
+            builder.Property(x => x.CreatedDateUtc)
                 .HasColumnName("created_date_utc");
         }
     }
