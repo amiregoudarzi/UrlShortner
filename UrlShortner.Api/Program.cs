@@ -69,7 +69,12 @@ builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<IUrlClickRepository, UrlClickRepository>();
+
 builder.Services.AddTransient<UrlClickedEventHandler>();
+
+
+
 
 var app = builder.Build();
 
