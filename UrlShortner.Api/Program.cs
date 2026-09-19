@@ -1,6 +1,7 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
+using UrlShortner.Application.Events.Handlers;
 using UrlShortner.Application.Interfaces;
 using UrlShortner.Application.Mapping;
 using UrlShortner.Application.Services.ShortUrl;
@@ -44,12 +45,31 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("SqlConnection")));
 
+builder.Services.AddCap(x =>
+{
+    x.UseSqlServer(
+        builder.Configuration.GetConnectionString("SqlConnection"));
+
+    x.UseRabbitMQ(options =>
+    {
+        options.HostName = builder.Configuration["RabbitMQ:Host"];
+        options.Port = int.Parse(
+            builder.Configuration["RabbitMQ:Port"]!);
+        options.UserName = builder.Configuration["RabbitMQ:Username"];
+        options.Password = builder.Configuration["RabbitMQ:Password"];
+        options.VirtualHost = builder.Configuration["RabbitMQ:VirtualHost"];
+    });
+});
+
+
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddTransient<UrlClickedEventHandler>();
 
 var app = builder.Build();
 
