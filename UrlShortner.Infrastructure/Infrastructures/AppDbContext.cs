@@ -19,8 +19,6 @@ public class AppDbContext : DbContext
     
     public DbSet<User> Users { get; set; }
     
-    public DbSet<Password> Passwords { get; set; }
-    
     public DbSet<ShortUrl> ShortUrls { get; set; }
     
     public DbSet<UrlClick> UrlClicks { get; set; }
@@ -30,7 +28,6 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfiguration(new UserEntityTypeConfiguration());
-        builder.ApplyConfiguration(new PasswordEntityTypeConfiguration());
         builder.ApplyConfiguration(new ShortUrlEntityTypeConfiguration());
         builder.ApplyConfiguration(new UrlClickEntityTypeConfiguration());
         builder.ApplyConfiguration(new MessageProcessingEntityTypeConfiguration());
@@ -53,6 +50,10 @@ public class AppDbContext : DbContext
             builder.Property(model => model.Id)
                 .UsePropertyAccessMode(PropertyAccessMode.Property)
                 .HasColumnName("id");
+            
+            builder.Property(model => model.KeycloakUserId)
+                .UsePropertyAccessMode(PropertyAccessMode.Property)
+                .HasColumnName("keycloak_user_id");
             
             builder.Property(model => model.FirstName)
                 .UsePropertyAccessMode(PropertyAccessMode.Property)
@@ -77,44 +78,11 @@ public class AppDbContext : DbContext
                 .HasColumnName("phone_number")
                 .IsRequired(false);
             
-            builder.Property(model => model.Username)
-                .UsePropertyAccessMode(PropertyAccessMode.Property)
-                .HasColumnName("user_name")
-                .IsRequired(false);
-        
-            
-            builder.HasOne(user => user.Password)
-                .WithOne(password => password.User)
-                .HasForeignKey<Password>(password => password.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
             builder.Property(model => model.CreatedDateUtc)
                 .UsePropertyAccessMode(PropertyAccessMode.Property)
                 .HasColumnName("created_date_utc");
         }
     }
-    
-    private class PasswordEntityTypeConfiguration : IEntityTypeConfiguration<Password>
-    {
-        public void Configure(EntityTypeBuilder<Password> builder)
-        {
-            builder.ToTable("passwords");
-
-            builder.HasKey(model => model.Id);
-
-            builder.Property(model => model.Id)
-                .UsePropertyAccessMode(PropertyAccessMode.Property)
-                .HasColumnName("id");
-                
-            builder.Property(model => model.PasswordHash)
-                .UsePropertyAccessMode(PropertyAccessMode.Property)
-                .HasColumnName("password_hash");
-            
-            builder.Property(model => model.CreatedDateUtc)
-                .UsePropertyAccessMode(PropertyAccessMode.Property)
-                .HasColumnName("created_date_utc");
-        }
-    }    
     
     private class ShortUrlEntityTypeConfiguration : IEntityTypeConfiguration<ShortUrl>
     {
