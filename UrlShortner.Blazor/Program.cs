@@ -1,10 +1,23 @@
 using UrlShortner.Blazor.Components;
+using UrlShortner.Blazor.Services.Urls;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient("Api", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:3030/");
+});
+
+// Add services to the container.
+
+
+builder.Services.AddScoped<CreateUrl>();
+builder.Services.AddScoped<GetListUrl>();
+builder.Services.AddScoped<FindListUrl>();
+
 
 var app = builder.Build();
 
