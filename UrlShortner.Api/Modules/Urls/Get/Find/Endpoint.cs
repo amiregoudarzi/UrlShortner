@@ -21,9 +21,12 @@ public sealed class Endpoint : Endpoint<Query, IReadOnlyList<Query.Response>>
     {
         public EndpointSummary()
         {
-            Summary = "List registered urls";
-            Description = "List registered urls.";
-            Response<IReadOnlyList<List.Query.Response>>(200, "urls list");
+            Summary = "Find registered urls";
+            Description = "Find registered urls with pagination and search.";
+
+            Response<IReadOnlyList<Query.Response>>(
+                200,
+                "urls list");
         }
     }
 }

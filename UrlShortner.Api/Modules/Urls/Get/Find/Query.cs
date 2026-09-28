@@ -108,7 +108,7 @@ public sealed record Query : ICommand<IReadOnlyList<Query.Response>>
                                          original_url AS Url,
                                          short_code AS ShortUrl
                                      FROM dbo.short_urls
-                                     WHERE OriginalUrl LIKE @Search
+                                     WHERE original_url LIKE @Search
                                      ORDER BY created_date_utc DESC
                                      """;
 
