@@ -1,0 +1,77 @@
+﻿@using UrlShortner.Blazor.Services.Urls
+@inject CreateUrl CreateUrlClient
+
+<section class="card">
+    <div class="card-header">
+        <div>
+            <h2>Create short URL</h2>
+            <p>Create a new shortened URL.</p>
+        </div>
+    </div>
+
+    <div class="input-row">
+        <input @bind="url"
+               @bind:event="oninput"
+               placeholder="https://example.com" />
+
+        <button class="primary"
+                @onclick="ShortenUrl"
+                disabled="@isLoading">
+            @(isLoading ? "Creating..." : "Shorten")
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="error">@error</div>
+    }
+
+    @if (!string.IsNullOrEmpty(shortUrl))
+    {
+        <div class="success">
+            <span>Short URL</span>
+            <strong>@shortUrl</strong>
+        </div>
+    }
+</section>
+
+@code {
+    private string? url;
+    private string? shortUrl;
+    private string? error;
+    private bool isLoading;
+
+    private async Task ShortenUrl()
+    {
+        error = null;
+        shortUrl = null;
+
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            error = "Please enter a URL.";
+            return;
+        }
+
+        try
+        {
+            isLoading = true;
+
+            var result = await CreateUrlClient.CreateShortUrlsAsync([url]);
+
+            shortUrl = result.FirstOrDefault();
+
+            if (shortUrl is null)
+            {
+                error = "No short URL was returned.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

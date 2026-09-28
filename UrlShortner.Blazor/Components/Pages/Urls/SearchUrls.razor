@@ -1,0 +1,183 @@
+﻿@using UrlShortner.Blazor.Services.Urls
+@inject FindListUrl FindListUrlClient
+@page "/urls/find"
+
+<section class="card">
+    <div class="card-header">
+        <div>
+            <h2>Search URLs</h2>
+            <p>Search registered URLs with pagination.</p>
+        </div>
+    </div>
+
+    <div class="input-row">
+        <input @bind="search"
+               @bind:event="oninput"
+               placeholder="Search by URL..." />
+
+        <button @onclick="Search"
+                disabled="@isLoading">
+            @(isLoading ? "Searching..." : "Search")
+        </button>
+    </div>
+
+    <div class="pagination-controls">
+
+        <label>
+            Page
+            <input type="number"
+                   min="1"
+                   @bind="page" />
+        </label>
+
+        <label>
+            Page size
+            <input type="number"
+                   min="1"
+                   @bind="pageSize" />
+        </label>
+
+        <button @onclick="GoToPage"
+                disabled="@isLoading">
+            Go
+        </button>
+
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="error">@error</div>
+    }
+
+    @if (loaded)
+    {
+        <div class="pagination">
+
+            <button @onclick="PreviousPage"
+                    disabled="@(page <= 1 || isLoading)">
+                ← Previous
+            </button>
+
+            <span>Page @(page)</span>
+
+            <button @onclick="NextPage"
+                    disabled="@(results.Count < pageSize || isLoading)">
+                Next →
+            </button>
+
+        </div>
+
+        @if (results.Count > 0)
+        {
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Original URL</th>
+                        <th>Short URL</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @foreach (var item in results)
+                    {
+                        <tr>
+                            <td>@item.Url</td>
+                            <td class="short-url">@item.ShortUrl</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty">No URLs found.</div>
+        }
+    }
+</section>
+
+@code {
+    private List<FindListUrl.Response> results = [];
+
+    private string? search;
+    private string? error;
+
+    private bool isLoading;
+    private bool loaded;
+
+    private int page = 1;
+    private int pageSize = 20;
+
+    private async Task Search()
+    {
+        page = 1;
+
+        await LoadResults();
+    }
+
+    private async Task GoToPage()
+    {
+        if (page < 1)
+            page = 1;
+
+        if (pageSize < 1)
+            pageSize = 1;
+
+        await LoadResults();
+    }
+
+    private async Task LoadResults()
+    {
+        error = null;
+
+        try
+        {
+            isLoading = true;
+
+            results = await FindListUrlClient.ExecuteAsync(
+                new FindListUrl.Request
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Search = string.IsNullOrWhiteSpace(search)
+                        ? null
+                        : search.Trim()
+                });
+
+            loaded = true;
+        }
+        catch (HttpRequestException)
+        {
+            error = "Unable to load URLs. Please try again.";
+        }
+        catch (Exception)
+        {
+            error = "Something went wrong.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (results.Count < pageSize)
+            return;
+
+        page++;
+
+        await LoadResults();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (page <= 1)
+            return;
+
+        page--;
+
+        await LoadResults();
+    }
+}

@@ -1,0 +1,81 @@
+﻿@using UrlShortner.Blazor.Services.Urls
+@inject GetListUrl GetListUrlClient
+
+<section class="card">
+    <div class="card-header">
+        <div>
+            <h2>All URLs</h2>
+            <p>Load all registered URLs.</p>
+        </div>
+
+        <button @onclick="GetAllUrls"
+                disabled="@isLoading">
+            @(isLoading ? "Loading..." : "Get all")
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="error">@error</div>
+    }
+
+    @if (loaded)
+    {
+        @if (urls.Count > 0)
+        {
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Original URL</th>
+                        <th>Short URL</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    @foreach (var item in urls)
+                    {
+                        <tr>
+                            <td>@item.Url</td>
+                            <td class="short-url">@item.ShortUrl</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty">No URLs found.</div>
+        }
+    }
+</section>
+
+@code {
+    private List<GetListUrl.Response> urls = [];
+    private bool isLoading;
+    private bool loaded;
+    private string? error;
+
+    private async Task GetAllUrls()
+    {
+        error = null;
+
+        try
+        {
+            isLoading = true;
+
+            urls = await GetListUrlClient.ExecuteAsync();
+
+            loaded = true;
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
